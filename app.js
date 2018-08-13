@@ -7,8 +7,12 @@ const  fs = require('fs');
 var _data = require('./lib/data');
 
 
-_data.create('test','newfile',{'foo':'bar'},function (err) {
-    console.log(err);
+_data.delete('dir','newfile',function (err) {
+    if(err){
+    console.log("Error is "+err);
+    }else{
+    console.log("deleted!");
+    }
 });
 
 const httpServer = http.createServer((req,res)=>{
