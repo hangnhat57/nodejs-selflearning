@@ -27,7 +27,8 @@ const router ={
     'greeting':handlers.greeting,
     'ping':handlers.ping,
     'jso':handlers.jso,
-    'users':handlers.users
+    'users': handlers.users,
+    'tokens': handlers.tokens
 };
 
 
