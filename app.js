@@ -5,7 +5,7 @@ const StrignDecoder = require('string_decoder').StringDecoder;
 let config = require('./config');
 const  fs = require('fs');
 var _data = require('./lib/data');
-
+var handlerss = require('./lib/handlers');
 
 _data.delete('dir','newfile',function (err) {
     if(err){
@@ -29,21 +29,7 @@ const httpsServer = https.createServer(httpsServerOptions,(req,res)=>{
 });
 
 
-let handlerss = {
 
-};
-handlerss.notFound= function(data,callback){
-    callback(404);
-};
-handlerss.greeting = function (data,callback) {
-    callback(406,{'message':'hello'});
-};
-handlerss.ping = (data,callback)=>{
-    callback(200)
-};
-handlerss.jso = (data,callback)=>{
-    callback(200,{"json":"no content"})
-}
 const router ={
     'greeting':handlerss.greeting,
     'ping':handlerss.ping,
