@@ -1,19 +1,12 @@
 const http = require('http');
 const https = require('https');
 const url = require('url');
-const StrignDecoder = require('string_decoder').StringDecoder;
+const StringDecoder = require('string_decoder').StringDecoder;
 let config = require('./config');
 const  fs = require('fs');
-var _data = require('./lib/data');
-var handlerss = require('./lib/handlers');
+var handlers = require('./lib/handlers');
+const helpers = require('./lib/helpers');
 
-_data.delete('dir','newfile',function (err) {
-    if(err){
-    console.log("Error is "+err);
-    }else{
-    console.log("deleted!");
-    }
-});
 
 const httpServer = http.createServer((req,res)=>{
     unifiedServer(req,res);
@@ -31,9 +24,10 @@ const httpsServer = https.createServer(httpsServerOptions,(req,res)=>{
 
 
 const router ={
-    'greeting':handlerss.greeting,
-    'ping':handlerss.ping,
-    'jso':handlerss.jso
+    'greeting':handlers.greeting,
+    'ping':handlers.ping,
+    'jso':handlers.jso,
+    'users':handlers.users
 };
 
 
@@ -44,7 +38,7 @@ httpServer.listen(config.httpPort,()=>{
     console.log(`Server started at ${config.httpPort} on ${config.envName}`)
 });
 
-httpsServer.listen(config.httpsPost,()=>{
+httpsServer.listen(config.httpsPort,()=>{
     console.log(`Server started at ${config.httpsPost} on ${config.envName}`)
 });
 
@@ -57,9 +51,10 @@ let unifiedServer = function (req,res) {
     let pathName = urlParse.pathname.replace(/^\/+|\/=$/g,'');
     let queryString = urlParse.query;
     let requestHeaders = urlParse.headers;
+    let method = req.method.toLowerCase();
     let buffer = '';
     req.on("data",(data)=>{
-        buffer += new StrignDecoder('utf-8').write(data);
+        buffer += new StringDecoder('utf-8').write(data);
     });
 
     req.on("end",()=>{
@@ -67,21 +62,16 @@ let unifiedServer = function (req,res) {
             'path':pathName,
             'query':queryString,
             'headers':requestHeaders,
-            'payload':buffer
+            'method':method,
+            'payload':helpers.bufferToObject(buffer)
         };
 
-        let choosen = router[pathName]?router[pathName]:handlerss.notFound;
+        let choosen = router[pathName]?router[pathName]:handlers.notFound;
         choosen(data,(statusCode,object='')=>{
             statusCode = statusCode?statusCode:404;
             res.setHeader('Content-Type','application/json');
             res.writeHead(statusCode);
-            res.write(`Path name is : ${data.path}`);
-            res.write(`
-            Query is : ${JSON.stringify(data.query)}`);
-            res.write(`
-            Payload is : ${data.payload}
-            `);
-            object?res.write(JSON.stringify(object)):'';
+            object?res.end(JSON.stringify(object)):res.write('{}');
         });
 
         console.log(data);

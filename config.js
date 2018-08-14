@@ -8,8 +8,9 @@ let environments = {};
 
 environments.staging ={
     'httpPort' :3000,
-    'httpsPost':3001,
-    'envName':'staging'
+    'httpsPort':3001,
+    'envName':'staging',
+    'keySecret':'daylamatma'
 };
 
 
@@ -19,7 +20,8 @@ environments.staging ={
 environments.production ={
     'httpPort':5000,
     'httpsPort':5001,
-    'envName':'production'
+    'envName':'production',
+    'keySecret':'daylamatma'
 };
 
 let currentEnvironment = process.env.NODE_ENV?process.env.NODE_ENV.toLowerCase():'';
